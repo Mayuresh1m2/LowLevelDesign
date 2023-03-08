@@ -48,4 +48,8 @@ public class ClientHandler {
             }
         }
     }
+
+    public boolean supportsPaymentMode(String clientId, PaymentMode paymentMode) {
+        return clients.get(clientId).getSupportedPaymentModes().contains(paymentMode);
+    }
 }

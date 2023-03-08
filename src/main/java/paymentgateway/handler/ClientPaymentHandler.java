@@ -2,10 +2,9 @@ package paymentgateway.handler;
 
 import lombok.Getter;
 import paymentgateway.client.PaymentMode;
-import paymentgateway.payment.PaymentHandler;
-import paymentgateway.payment.PaymentHandlerFactory;
+import paymentgateway.payment.handler.PaymentHandler;
+import paymentgateway.payment.handler.PaymentHandlerFactory;
 import paymentgateway.payment.models.PaymentDetail;
-import paymentgateway.router.BankSuccessPercentageRouter;
 import paymentgateway.router.TxRouter;
 import paymentgateway.router.TxRouterType;
 
@@ -39,11 +38,5 @@ public class ClientPaymentHandler {
 
     public void makePayment(PaymentDetail paymentDetail, TxRouterType txRouterType) {
         paymentHandlerFactory.getPaymentHandler(paymentDetail.getPaymentMode(), txRouterType).makePayment(paymentDetail);
-    }
-
-
-    public TxRouter chooseTxRouter() {
-        System.out.println("Choosing Tx Router");
-        return new BankSuccessPercentageRouter();
     }
 }

@@ -1,13 +1,13 @@
-package paymentgateway.payment;
+package paymentgateway.payment.handler;
 
 import paymentgateway.payment.models.PaymentDetail;
 import paymentgateway.router.TxRouter;
 
-public class CreditCardPaymentHandler implements PaymentHandler {
-    TxRouter txRouter;
+public class CreditCardPaymentHandler extends PaymentHandler {
+
 
     public CreditCardPaymentHandler(TxRouter txRouter) {
-        this.txRouter = txRouter;
+        super(txRouter);
     }
 
     @Override

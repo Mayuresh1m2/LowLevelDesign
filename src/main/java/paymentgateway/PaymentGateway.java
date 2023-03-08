@@ -1,11 +1,11 @@
 package paymentgateway;
 
 import paymentgateway.client.PaymentMode;
+import paymentgateway.exception.ClientDoesNotSupportPaymentModeException;
 import paymentgateway.exception.PaymentModeNotSupportedByGatewayException;
 import paymentgateway.handler.ClientHandler;
 import paymentgateway.handler.ClientPaymentHandler;
 import paymentgateway.payment.models.PaymentDetail;
-import paymentgateway.router.TxRouter;
 import paymentgateway.router.TxRouterType;
 
 public class PaymentGateway {
@@ -18,8 +18,7 @@ public class PaymentGateway {
     }
 
     public String addClient(String id) {
-        clientHandler.addClient(id);
-        return id;
+        return clientHandler.addClient(id);
     }
 
     public void removeClient(String id) {
@@ -62,7 +61,11 @@ public class PaymentGateway {
         clientHandler.removePaymentMode(clientId, paymentMode);
     }
 
-    public void makePayment(String clientId, PaymentDetail paymentDetail) {
+    public void makePayment(String clientId, PaymentDetail paymentDetail) throws ClientDoesNotSupportPaymentModeException {
+        if (!clientHandler.supportsPaymentMode(clientId, paymentDetail.getPaymentMode())) {
+            throw new ClientDoesNotSupportPaymentModeException(
+                    String.format("Payment mode %s not supported by client with id %s", paymentDetail.getPaymentMode(), clientId));
+        }
         clientPaymentHandler.makePayment(paymentDetail, TxRouterType.BANK_SUCCESS_PERCENTAGE);
     }
 }

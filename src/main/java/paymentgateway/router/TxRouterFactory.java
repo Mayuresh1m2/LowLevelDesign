@@ -10,9 +10,10 @@ public class TxRouterFactory {
     public TxRouterFactory() {
         txRouters = new HashMap<>();
         txRouters.put(TxRouterType.DEFAULT_ICICI, new DefaultICICITxRouter());
+        txRouters.put(TxRouterType.BANK_SUCCESS_PERCENTAGE, new BankSuccessPercentageRouter());
     }
 
-    TxRouter getTxRouter(TxRouterType txRouterType) {
+    public TxRouter getTxRouter(TxRouterType txRouterType) {
         return txRouters.get(txRouterType);
     }
 }
