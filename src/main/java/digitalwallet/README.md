@@ -1,3 +1,4 @@
+[Q link](https://techwithkp.com/digital-wallet-design-machine-coding-round-solution/)
 Mandatory Requirements
 
     You are supposed to create a digital wallet system that allows people to transfer amounts between their wallets.

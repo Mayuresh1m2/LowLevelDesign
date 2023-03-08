@@ -1,3 +1,5 @@
+[Q link](https://leetcode.com/discuss/interview-question/object-oriented-design/3257626/Payment-Gateway-or-TypeScript-or-Javascript)
+
 Payments is an integral component of any e-commerce or fintech.With the advent of digital india, we have seen different types of payments ecosystem rising up - Payments gateways, UPI, Rupay Network etc. These are easy to integrate and any org can get started with this in a matter of days.
 
 With the onset of different payment players, organizations integrate different payment gateways and shuffle between them to suit their use cases best.
