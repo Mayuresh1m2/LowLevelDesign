@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-public class LRUCacheTest {
+public class CacheTest {
     LRUCache<String, String> cache;
     @Before
     public void setup(){
