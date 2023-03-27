@@ -4,10 +4,15 @@ import cache.input.CacheElement;
 import cache.queue.QueueNode;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class LFUCache<K, V> implements Cache<K, V> {
+    final Lock readLock;
+    final Lock writeLock;
     Map<K, QueueNode<CacheElement<K, V>>> map;
+    ReentrantReadWriteLock lock;
     Queue<QueueNode<CacheElement<K, V>>> queue;
     int maxSize;
 
@@ -18,17 +23,27 @@ public class LFUCache<K, V> implements Cache<K, V> {
                 (Long.compare(o1.getTimestamp(),
                         o2.getTimestamp())) : Long.compare(o1.getFrequency(),
                 o2.getFrequency()));
+        lock = new ReentrantReadWriteLock(true);
+        readLock = lock.readLock();
+        writeLock = lock.writeLock();
+
+
     }
 
     @Override
     public boolean put(K key, V value) {
-        if (map.size() == maxSize) {
-            evictCache();
+        try {
+            writeLock.lock();
+            if (map.size() == maxSize) {
+                evictCache();
+            }
+            QueueNode<CacheElement<K, V>> node = new QueueNode<>(new CacheElement<>(key, value));
+            map.put(key, node);
+            queue.add(node);
+            return true;
+        } finally {
+            writeLock.unlock();
         }
-        QueueNode<CacheElement<K, V>> node = new QueueNode<>(new CacheElement<>(key, value));
-        map.put(key, node);
-        queue.add(node);
-        return true;
     }
 
     private void evictCache() {
@@ -39,15 +54,19 @@ public class LFUCache<K, V> implements Cache<K, V> {
 
     @Override
     public Optional<V> get(K key) {
-        QueueNode<CacheElement<K, V>> node = map.get(key);
-        if (node != null) {
-            queue.remove(node);
-            node.incrementFrequency();
-            queue.add(node);
-            return Optional.of(node.getValue().getValue());
+        try {
+            readLock.lock();
+            QueueNode<CacheElement<K, V>> node = map.get(key);
+            if (node != null) {
+                queue.remove(node);
+                node.incrementFrequency();
+                queue.add(node);
+                return Optional.of(node.getValue().getValue());
+            }
+            return Optional.empty();
+        } finally {
+            readLock.unlock();
         }
-        return Optional.empty();
-
     }
 
     @Override
@@ -62,8 +81,14 @@ public class LFUCache<K, V> implements Cache<K, V> {
 
     @Override
     public void clear() {
-        map = new HashMap<>(maxSize);
-        queue = new PriorityQueue<>((o1, o2) -> (o1.getFrequency() == o2.getFrequency()) ? (Long.compare(o2.getTimestamp(),
-                o1.getTimestamp())) : Long.compare(o1.getFrequency(), o2.getFrequency()));
+        try {
+            writeLock.lock();
+
+            map = new HashMap<>(maxSize);
+            queue = new PriorityQueue<>((o1, o2) -> (o1.getFrequency() == o2.getFrequency()) ? (Long.compare(o2.getTimestamp(),
+                    o1.getTimestamp())) : Long.compare(o1.getFrequency(), o2.getFrequency()));
+        } finally {
+            writeLock.unlock();
+        }
     }
 }
